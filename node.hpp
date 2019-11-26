@@ -4,14 +4,24 @@ class  node{
 		std::string _ville;
 		std::vector<node *> _V;
 		bool _availability;
+		std::mutex _node_mutex;
 		int _id;
 
 
 	public:
 		node(std::string newVille, int id){
+
 			_ville = newVille;
 			_availability = true;
 			_id = id;
+
+		}
+
+		node(node const& Acopier){
+
+			_ville = Acopier._ville;
+			_availability = true;
+			_id = Acopier._id;
 
 		}
 
@@ -26,7 +36,9 @@ class  node{
 		}
 
 		void set_availability(bool newState){
+			_node_mutex.lock();
 			_availability = newState;
+			_node_mutex.unlock();
 		}
 
 	//getter
@@ -49,6 +61,14 @@ class  node{
  		}
 
  		bool isAvailable(){
- 			return _availability;
+ 			_node_mutex.lock();
+ 			int ret = _availability;
+ 			_node_mutex.unlock();
+ 			return ret;
  		}
+
+ 		std::mutex &get_mutex(){
+ 			return _node_mutex; 
+ 		}
+
 };
