@@ -41,6 +41,15 @@ class  node{
 			_node_mutex.unlock();
 		}
 
+		void set_arriving(){
+ 			_node_mutex.lock();
+ 			_availability = false;
+ 		}
+
+ 		void set_leaving(){
+ 			_availability = true;
+ 			_node_mutex.unlock();
+ 		}
 	//getter
  		void get_node(){
  			std::cout << '[' << _ville << ']' << std::endl;

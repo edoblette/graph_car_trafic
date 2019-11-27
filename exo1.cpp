@@ -7,15 +7,15 @@
 
 #include "node.hpp"
 #include "car.hpp"
-#define THREAD 3
-#define CARS 3
+#define THREAD 2
+#define CARS THREAD
 
 // PROTO
 void commounLink_adding(uint, uint);
 void graph_init();
 void car_init();
 void car_moving(uint);
-void change_availability(uint, uint);
+void mutex_securing(uint, uint);
 void treading();
 
 // GLOBAL
@@ -30,14 +30,13 @@ void commounLink_adding(uint a, uint b){
 	root[b].add_link(&root[a]);
 }
 
-void change_availability(uint oldLocation, uint newLocation){
-
-	root[newLocation].set_availability(false);
-	root[oldLocation].set_availability(true);
+void mutex_securing(uint oldLocation, uint newLocation){
+	root[newLocation].set_arriving();
+	root[oldLocation].set_leaving();
 }
 
 void graph_init(){
-	std::vector<std::string> list{"lyon", "paris", "bordeaux", "marseille", "lille", "reims"};
+	std::vector<std::string> list{"lyon", "paris", "bordeaux", "marseille"};//"lille", "reims", "grenoble", "rouen", "annecy", "montpellier", "nantes", "montellimar"};
 	//cree node
 	int i = 0;
 	for (auto it = list.cbegin(); it != list.cend(); it++, ++i)
@@ -71,24 +70,24 @@ void car_init(){
 }
 
 void car_moving(uint id_car){
+	while(vehicules[id_car].get_gaz() > 0){
+		uint newLocation;
+		uint oldLocation = vehicules[id_car].get_location();
+		do{
+			newLocation = root[oldLocation].get_nodeVectorId(rand() % root[oldLocation].get_nodeVectorSize()); //on choisis un route random parmis depuis la ville
+		}while(newLocation == oldLocation);
 
-	uint newLocation;
-	uint oldLocation = vehicules[id_car].get_location();
-	
-	newLocation = root[oldLocation].get_nodeVectorId(rand() % root[oldLocation].get_nodeVectorSize()); //on choisis un route random parmis depuis la ville
-	
-	if(root[newLocation].isAvailable()){	
-		change_availability(oldLocation, newLocation);
+		global_mutex.lock();
+			std::cout << " [DEMAND]la voiture " << id_car << " veut passer a  " << root[oldLocation].get_cityName() << " à " << root[newLocation].get_cityName() << std::endl;
+		global_mutex.unlock();
+
+		mutex_securing(oldLocation, newLocation);
 		vehicules[id_car].move(newLocation);
+
 		global_mutex.lock();
 			std::cout << "[SUCCESS]la voiture " << id_car << " passe de " << root[oldLocation].get_cityName() << " à " << root[newLocation].get_cityName() << std::endl;
 		global_mutex.unlock();
-	}else{
-		global_mutex.lock();
-			std::cout << "[FAIL]la voiture " << id_car << " ne peut pas passer de " << root[oldLocation].get_cityName() << " à " << root[newLocation].get_cityName() << std::endl;
-		global_mutex.unlock();
-		sleep(rand() % 5);
-		car_moving(id_car);
+		sleep(rand() % 3);
 	}
  	
 }
@@ -107,10 +106,7 @@ int main()
   	srand (time(NULL));
 	graph_init();
 	car_init();
-	for(int i = 0; i < 5; i++){
-		treading();
-		std::cout << "\n";
-	}
+	treading();
 
 	//to do
 	return 0;
