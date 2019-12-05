@@ -14,3 +14,5 @@ elle doit changer de direction.
 <enter>
 Le code marche et affiche un bon deroulement.
 Certaines fois ne finit pas mais cela est normal parce que une derniere voiture attend qu'une ville se libere mais celle ci est occupe par une voiture en stationnement qui n'as plus d'essence.
+
+![Resulat](/img/imgresult.png)

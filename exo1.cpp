@@ -16,7 +16,7 @@
 
 #include "node.hpp"
 #include "car.hpp"
-#define THREAD 2
+#define THREAD 3
 #define CARS THREAD
 
 // PROTO
@@ -38,7 +38,7 @@ std::mutex global_mutex;
  */
 void graph_init(){
 	 // liste de ville 
-	std::vector<std::string> list{"lyon", "paris", "bordeaux", "marseille"};//"lille", "reims", "grenoble", "rouen", "annecy", "montpellier", "nantes", "montellimar"};
+	std::vector<std::string> list{"lyon", "paris", "bordeaux", "marseille", "lille", "reims", "grenoble"};  //"rouen", "annecy", "montpellier", "nantes", "montellimar"};
 	
 	 // cree noeud
 	int i = 0;
